@@ -24,6 +24,15 @@ def create_3d_data():
         image_data = image_nii.get_fdata()
         label_data = label_nii.get_fdata()
         
+        # Resize data to smaller dimensions
+        from scipy.ndimage import zoom
+        target_shape = (128, 128, 36)
+        zoom_factors = (target_shape[0]/image_data.shape[0], 
+                       target_shape[1]/image_data.shape[1],
+                       target_shape[2]/image_data.shape[2])
+        image_data = zoom(image_data, zoom_factors, order=1)
+        label_data = zoom(label_data, zoom_factors, order=0)
+        
         # Normalize image data to [0, 1]
         image_min = np.min(image_data)
         image_max = np.max(image_data)
