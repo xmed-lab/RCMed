@@ -36,11 +36,11 @@ def get_cases_from_files():
     image_files = [f for f in files if f.endswith('--image.png')]
     
     modality_descriptions = {
-        'ct': 'Computed Tomography',
-        'mr': 'Magnetic Resonance',
-        'x_ray': 'X-Ray',
+        'ct': 'CT (Computed Tomography)',
+        'mr': 'MR (Magnetic Resonance)',
+        'x_ray': 'X-ray',
         'ultrasound': 'Ultrasound',
-        'pet': 'Positron Emission Tomography',
+        'pet': 'PET (Positron Emission Tomography)',
         'pathology': 'Pathology',
         'dermoscopy': 'Dermoscopy',
         'endoscopy': 'Endoscopy',
