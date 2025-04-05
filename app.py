@@ -4,7 +4,7 @@ import numpy as np
 import os
 from PIL import Image
 
-app = Flask(__name__, static_url_path='/static', static_folder='build/static')
+app = Flask(__name__, static_url_path='/RCMed/static')
 
 # Configure for GitHub Pages
 app.config['FREEZER_DESTINATION'] = 'build'

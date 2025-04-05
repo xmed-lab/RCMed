@@ -24,15 +24,6 @@ def create_3d_data():
         image_data = image_nii.get_fdata()
         label_data = label_nii.get_fdata()
         
-        # Resize data to smaller dimensions
-        from scipy.ndimage import zoom
-        target_shape = (128, 128, 36)
-        zoom_factors = (target_shape[0]/image_data.shape[0], 
-                       target_shape[1]/image_data.shape[1],
-                       target_shape[2]/image_data.shape[2])
-        image_data = zoom(image_data, zoom_factors, order=1)
-        label_data = zoom(label_data, zoom_factors, order=0)
-        
         # Normalize image data to [0, 1]
         image_min = np.min(image_data)
         image_max = np.max(image_data)
@@ -52,8 +43,8 @@ def create_3d_data():
                 'height': int(height),
                 'depth': int(depth)
             },
-            'image': image_data.ravel().tolist(),
-            'label': label_data.ravel().tolist()
+            'image': np.ascontiguousarray(image_data.transpose(2, 1, 0)).ravel().tolist(),
+            'label': np.ascontiguousarray(label_data.transpose(2, 1, 0)).ravel().tolist()
         }
         
         print(f'Successfully loaded 3D data with shape: {image_data.shape}')
@@ -75,8 +66,8 @@ def create_3d_data():
                 'height': size,
                 'depth': size
             },
-            'image': image_data.ravel().tolist(),
-            'label': label_data.ravel().tolist()
+            'image': np.ascontiguousarray(image_data.transpose(2, 1, 0)).ravel().tolist(),
+            'label': np.ascontiguousarray(label_data.transpose(2, 1, 0)).ravel().tolist()
         }
 
 def build_static_site():
@@ -113,27 +104,13 @@ def build_static_site():
         f.write(html_content)
     
     # Generate and write 3D data
-    print('Generating 3D data...')
     data = create_3d_data()
     
-    # Create data directory
-    data_dir = os.path.join('build/static/data')
-    os.makedirs(data_dir, exist_ok=True)
-    
-    # Validate data before saving
-    print(f'Data validation:')
-    print(f'- Image array length: {len(data["image"])}')
-    print(f'- Label array length: {len(data["label"])}')
-    print(f'- Expected length: {data["dimensions"]["width"] * data["dimensions"]["height"] * data["dimensions"]["depth"]}')
-    print(f'- First few image values: {data["image"][:5]}')
-    print(f'- Image value range: [{min(data["image"])}, {max(data["image"])}]')
-    
-    # Save data to JSON file
-    data_file = os.path.join(data_dir, '3d_data.json')
-    print(f'Saving 3D data to {data_file}')
-    with open(data_file, 'w') as f:
+    # Save data with pretty printing for debugging
+    with open('build/api/get_3d_data', 'w') as f:
         json.dump(data, f, indent=2)
-    print('3D data saved successfully')
+    with open('build/get_3d_data', 'w') as f:
+        json.dump(data, f, indent=2)
     
     print("Generated test 3D data with dimensions:", data['dimensions'])
     print("Data ranges - Image:", 
