@@ -1,6 +1,13 @@
-# Medical Image Segmentation Demo
+# RCMed - Medical Image Segmentation Platform
 
-A web-based demonstration of medical image segmentation results. This application showcases various medical imaging cases with their corresponding segmentation results in a clean, modern interface.
+A web-based platform for showcasing state-of-the-art medical image segmentation results across multiple modalities. This application demonstrates fine-grained analysis capabilities in medical imaging with an intuitive, modern interface.
+
+## Features
+
+- Support for 9 different medical imaging modalities
+- Interactive comparison sliders
+- Responsive design for all devices
+- Real-time filtering by modality
 
 ## Setup
 
@@ -9,14 +16,14 @@ A web-based demonstration of medical image segmentation results. This applicatio
 pip install -r requirements.txt
 ```
 
-2. Add your medical images to the `static/images` directory:
-   - Original images: brain_mri.jpg, lung_ct.jpg
-   - Segmented results: brain_mri_seg.jpg, lung_ct_seg.jpg
-
-3. Run the application:
+2. Run the application:
 ```bash
 python app.py
 ```
+
+## Live Demo
+
+Visit our live demo at: https://xmed-lab.github.io/RCMed/
 
 4. Open your browser and visit `http://localhost:5000`
 
@@ -39,3 +46,6 @@ medical-segmentation-demo/
 │   └── images/        # Medical images
 └── templates/         # HTML templates
 ```
+=======
+# RCMed
+>>>>>>> 34659662ffcddc961b6a7091e15a45296beac64f
