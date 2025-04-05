@@ -125,63 +125,22 @@ async function init3DViewer() {
         const volumePositions = [];
         const volumeColors = [];
         
-        // Process volume data with interpolation
+        // Process volume data
         console.log('Processing volume data...');
-        const step = 0.5; // Smaller step for smoother interpolation
-        for (let z = 0; z < depth; z += step) {
-            for (let y = 0; y < height; y += step) {
-                for (let x = 0; x < width; x += step) {
-                    // Interpolate between grid points
-                    const x0 = Math.floor(x);
-                    const y0 = Math.floor(y);
-                    const z0 = Math.floor(z);
-                    const x1 = Math.min(x0 + 1, width - 1);
-                    const y1 = Math.min(y0 + 1, height - 1);
-                    const z1 = Math.min(z0 + 1, depth - 1);
+        for (let z = 0; z < depth; z++) {
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = (x * height * depth) + (y * depth) + z;
+                    const value = data.image[idx];
                     
-                    const fx = x - x0;
-                    const fy = y - y0;
-                    const fz = z - z0;
-                    
-                    // Get indices for the current position
-                    const idx000 = (x0 * height * depth) + (y0 * depth) + z0;
-                    const idx001 = (x0 * height * depth) + (y0 * depth) + z1;
-                    const idx010 = (x0 * height * depth) + (y1 * depth) + z0;
-                    const idx011 = (x0 * height * depth) + (y1 * depth) + z1;
-                    const idx100 = (x1 * height * depth) + (y0 * depth) + z0;
-                    const idx101 = (x1 * height * depth) + (y0 * depth) + z1;
-                    const idx110 = (x1 * height * depth) + (y1 * depth) + z0;
-                    const idx111 = (x1 * height * depth) + (y1 * depth) + z1;
-                    
-                    // Trilinear interpolation
-                    const v000 = data.image[idx000] || 0;
-                    const v001 = data.image[idx001] || 0;
-                    const v010 = data.image[idx010] || 0;
-                    const v011 = data.image[idx011] || 0;
-                    const v100 = data.image[idx100] || 0;
-                    const v101 = data.image[idx101] || 0;
-                    const v110 = data.image[idx110] || 0;
-                    const v111 = data.image[idx111] || 0;
-                    
-                    const value = (1 - fx) * (1 - fy) * (1 - fz) * v000 +
-                                 fx * (1 - fy) * (1 - fz) * v100 +
-                                 (1 - fx) * fy * (1 - fz) * v010 +
-                                 fx * fy * (1 - fz) * v110 +
-                                 (1 - fx) * (1 - fy) * fz * v001 +
-                                 fx * (1 - fy) * fz * v101 +
-                                 (1 - fx) * fy * fz * v011 +
-                                 fx * fy * fz * v111;
-                    if (value > 30) {  // Lower threshold to include more points
+                    if (value > 0.5) {  // Only show points where the value is significant
                         // Normalize coordinates to [-1, 1]
                         const nx = (x / width) * 2 - 1;
                         const ny = (y / height) * 2 - 1;
                         const nz = (z / depth) * 2 - 1;
                         
                         volumePositions.push(nx, ny, nz);
-                        
-                        // Normalize value to [0, 1] for color with increased brightness
-                        const intensity = Math.min(1.0, (value / 255) * 2.5);
-                        volumeColors.push(intensity, intensity, intensity);
+                        volumeColors.push(1, 1, 1);  // White points
                     }
                 }
             }
@@ -192,23 +151,23 @@ async function init3DViewer() {
         
         // Create volume point cloud
         const volumeMaterial = new THREE.PointsMaterial({
-            size: 0.025,
+            size: 0.05,  // Larger points
             vertexColors: true,
             transparent: true,
-            opacity: 0.4,
+            opacity: 0.8,  // More opaque
             sizeAttenuation: true
         });
         
         const volumePoints = new THREE.Points(volumeGeometry, volumeMaterial);
+        currentScene.add(volumePoints);  // Add to scene immediately
         
         // Create points for label visualization
         console.log('Processing label data...');
         const labelGeometry = new THREE.BufferGeometry();
         const labelPositions = [];
         
-        // Process label data with interpolation
-        const labelStep = 0.5; // Same step size as volume for consistency
-        for (let z = 0; z < depth; z += labelStep) {
+        // Process label data
+        for (let z = 0; z < depth; z++) {
             for (let y = 0; y < height; y += labelStep) {
                 for (let x = 0; x < width; x += labelStep) {
                     // Interpolate between grid points

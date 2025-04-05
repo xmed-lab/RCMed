@@ -1,62 +1,45 @@
 import os
 import shutil
 import json
-import nibabel as nib
 import numpy as np
 from jinja2 import Environment, FileSystemLoader
 from app import get_cases_from_files
 
-def get_3d_data():
-    image_path = os.path.join('static', 'images', 'image.nii.gz')
-    label_path = os.path.join('static', 'images', 'label.nii.gz')
+def create_test_data():
+    # Create a simple 3D shape (a sphere)
+    size = 32
+    center = size // 2
+    radius = size // 4
     
-    try:
-        # Load image and label
-        image = nib.load(image_path)
-        label = nib.load(label_path)
-        
-        # Get data and convert to numpy arrays
-        image_data = np.array(image.get_fdata(), dtype=np.float32)
-        label_data = np.array(label.get_fdata(), dtype=np.float32)
-        
-        # Normalize image data to [0, 1]
-        image_data = (image_data - image_data.min()) / (image_data.max() - image_data.min())
-        
-        # Ensure label data is binary
-        label_data = (label_data > 0).astype(np.float32)
-        
-        # Convert to Python lists
-        return {
-            'image': image_data.tolist(),
-            'label': label_data.tolist(),
-            'dimensions': {
-                'width': int(image_data.shape[0]),
-                'height': int(image_data.shape[1]),
-                'depth': int(image_data.shape[2])
-            }
-        }
-    except Exception as e:
-        print(f"Error loading 3D data: {e}")
-        # Return a small test cube as fallback
-        size = 32
-        test_data = np.zeros((size, size, size), dtype=np.float32)
-        test_data[size//4:3*size//4, size//4:3*size//4, size//4:3*size//4] = 1.0
-        return {
-            'image': test_data.tolist(),
-            'label': test_data.tolist(),
-            'dimensions': {
-                'width': size,
-                'height': size,
-                'depth': size
-            }
-        }
+    # Create coordinate grids
+    x, y, z = np.ogrid[:size, :size, :size]
+    
+    # Create a sphere
+    sphere = (x - center)**2 + (y - center)**2 + (z - center)**2 <= radius**2
+    
+    # Convert to float32
+    image_data = sphere.astype(np.float32)
+    label_data = sphere.astype(np.float32)
+    
+    # Create the data structure
+    data = {
+        'dimensions': {
+            'width': size,
+            'height': size,
+            'depth': size
+        },
+        'image': image_data.ravel().tolist(),
+        'label': label_data.ravel().tolist()
+    }
+    
+    return data
 
 def build_static_site():
     # Create build directory
     if os.path.exists('build'):
         shutil.rmtree('build')
     os.makedirs('build')
-    os.makedirs('build/api')  # Create api directory
+    os.makedirs('build/api')
     
     # Copy static files
     shutil.copytree('static', 'build/static')
@@ -85,34 +68,17 @@ def build_static_site():
         f.write(html_content)
     
     # Generate and write 3D data
-    try:
-        data = get_3d_data()
-        # Save to both locations to ensure it's found
-        with open('build/api/get_3d_data', 'w') as f:
-            json.dump(data, f)
-        with open('build/get_3d_data', 'w') as f:
-            json.dump(data, f)
-        print("Successfully generated 3D data")
-    except Exception as e:
-        print(f"Error generating 3D data: {e}")
-        # Create test data as fallback
-        size = 32
-        test_data = np.zeros((size, size, size), dtype=np.float32)
-        test_data[size//4:3*size//4, size//4:3*size//4, size//4:3*size//4] = 1.0
-        fallback_data = {
-            'image': test_data.tolist(),
-            'label': test_data.tolist(),
-            'dimensions': {
-                'width': size,
-                'height': size,
-                'depth': size
-            }
-        }
-        with open('build/api/get_3d_data', 'w') as f:
-            json.dump(fallback_data, f)
-        with open('build/get_3d_data', 'w') as f:
-            json.dump(fallback_data, f)
-        print("Generated fallback 3D data")
+    data = create_test_data()
+    
+    # Save data with pretty printing for debugging
+    with open('build/api/get_3d_data', 'w') as f:
+        json.dump(data, f, indent=2)
+    with open('build/get_3d_data', 'w') as f:
+        json.dump(data, f, indent=2)
+    
+    print("Generated test 3D data with dimensions:", data['dimensions'])
+    print("Data ranges - Image:", 
+          f"min={min(data['image'])}, max={max(data['image'])}")
     
     # Create 404 page
     with open('build/404.html', 'w', encoding='utf-8') as f:
