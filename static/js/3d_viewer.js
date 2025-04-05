@@ -170,10 +170,17 @@ async function init3DViewer() {
         
         // Process points
         data.image.forEach(point => {
+            // Validate point coordinates
+            if (point.x >= width || point.y >= height || point.z >= depth ||
+                point.x < 0 || point.y < 0 || point.z < 0) {
+                console.error('Invalid point coordinates:', point);
+                return;  // Skip this point
+            }
+            
             // Normalize coordinates to [-1, 1]
-            const nx = (point.x / width) * 2 - 1;
-            const ny = (point.y / height) * 2 - 1;
-            const nz = (point.z / depth) * 2 - 1;
+            const nx = ((point.x + 0.5) / width) * 2 - 1;
+            const ny = ((point.y + 0.5) / height) * 2 - 1;
+            const nz = ((point.z + 0.5) / depth) * 2 - 1;
             
             volumePositions.push(nx, ny, nz);
             // Use value directly for color since data is already normalized
@@ -188,10 +195,7 @@ async function init3DViewer() {
             // Add more detailed debug info
             console.error('Debug info:', {
                 dimensions: {width, height, depth},
-                totalPoints: width * height * depth,
-                processedPoints: lastIdx + 1,
-                threshold: threshold,
-                dataRange: {min: minVal, max: maxVal},
+                totalPoints: data.image.length,
                 firstValues: data.image.slice(0, 5)
             });
             throw new Error('No points added to volume geometry');
@@ -243,10 +247,17 @@ async function init3DViewer() {
         
         // Process label points
         data.label.forEach(point => {
+            // Validate point coordinates
+            if (point.x >= width || point.y >= height || point.z >= depth ||
+                point.x < 0 || point.y < 0 || point.z < 0) {
+                console.error('Invalid label coordinates:', point);
+                return;  // Skip this point
+            }
+            
             // Normalize coordinates to [-1, 1]
-            const nx = (point.x / width) * 2 - 1;
-            const ny = (point.y / height) * 2 - 1;
-            const nz = (point.z / depth) * 2 - 1;
+            const nx = ((point.x + 0.5) / width) * 2 - 1;
+            const ny = ((point.y + 0.5) / height) * 2 - 1;
+            const nz = ((point.z + 0.5) / depth) * 2 - 1;
             labelPositions.push(nx, ny, nz);
         });
         
