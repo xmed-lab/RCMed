@@ -130,7 +130,7 @@ async function init3DViewer() {
         for (let z = 0; z < depth; z++) {
             for (let y = 0; y < height; y++) {
                 for (let x = 0; x < width; x++) {
-                    const idx = (x * height * depth) + (y * depth) + z;
+                    const idx = z * (width * height) + y * width + x;
                     const value = data.image[idx];
                     
                     if (value > 0.5) {  // Only show points where the value is significant
