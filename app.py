@@ -144,24 +144,55 @@ def get_3d_data():
         print(f'Label data type: {label_data.dtype}')
         print(f'Label data range: {label_data.min()} to {label_data.max()}')
         
-        # Convert to uint8 (0-255)
+        # Normalize image data to [0,1]
         image_data = np.clip(image_data, 0, None)  # Ensure non-negative
         if image_data.max() > 0:
-            image_data = (image_data / image_data.max() * 255).astype(np.uint8)
-        else:
-            image_data = np.zeros_like(image_data, dtype=np.uint8)
-            
+            image_data = image_data / image_data.max()
+        
         # Convert label to binary mask
-        label_data = (label_data > 0).astype(np.uint8)
+        label_data = (label_data > 0).astype(np.float32)
+        
+        # Sample the data to reduce size (take every 2nd point)
+        stride = 2
+        image_data = image_data[::stride, ::stride, ::stride]
+        label_data = label_data[::stride, ::stride, ::stride]
         
         # Convert to list for JSON serialization
-        image_data_list = image_data.tolist()
-        label_data_list = label_data.tolist()
+        # Only include points above threshold
+        threshold = 0.1
+        points = []
+        labels = []
+        
+        for x in range(image_data.shape[0]):
+            for y in range(image_data.shape[1]):
+                for z in range(image_data.shape[2]):
+                    val = float(image_data[x,y,z])
+                    if val > threshold:
+                        points.append({
+                            'x': x,
+                            'y': y,
+                            'z': z,
+                            'v': val
+                        })
+                    
+                    if label_data[x,y,z] > 0:
+                        labels.append({
+                            'x': x,
+                            'y': y,
+                            'z': z
+                        })
+        
+        print(f'Number of points: {len(points)}')
+        print(f'Number of labels: {len(labels)}')
         
         return jsonify({
-            'image': image_data_list,
-            'label': label_data_list,
-            'dimensions': image_data.shape
+            'image': points,
+            'label': labels,
+            'dimensions': {
+                'width': image_data.shape[0],
+                'height': image_data.shape[1],
+                'depth': image_data.shape[2]
+            }
         })
     except Exception as e:
         print(f'Error in get_3d_data: {str(e)}')
