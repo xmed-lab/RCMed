@@ -119,7 +119,7 @@ async function init3DViewer() {
         console.log(`Processing data of size ${width}x${height}x${depth}`);
         
         console.log('Creating point clouds...');
-        console.log('Data dimensions:', dimensions);
+        console.log('Data dimensions:', data.dimensions);
         
         const volumeGeometry = new THREE.BufferGeometry();
         const volumePositions = [];
@@ -168,40 +168,12 @@ async function init3DViewer() {
         
         // Process label data
         for (let z = 0; z < depth; z++) {
-            for (let y = 0; y < height; y += labelStep) {
-                for (let x = 0; x < width; x += labelStep) {
-                    // Interpolate between grid points
-                    const x0 = Math.floor(x);
-                    const y0 = Math.floor(y);
-                    const z0 = Math.floor(z);
-                    const x1 = Math.min(x0 + 1, width - 1);
-                    const y1 = Math.min(y0 + 1, height - 1);
-                    const z1 = Math.min(z0 + 1, depth - 1);
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = (x * height * depth) + (y * depth) + z;
+                    const value = data.label[idx];
                     
-                    const fx = x - x0;
-                    const fy = y - y0;
-                    const fz = z - z0;
-                    
-                    // Trilinear interpolation for labels
-                    const v000 = data.label[x0][y0][z0];
-                    const v001 = data.label[x0][y0][z1];
-                    const v010 = data.label[x0][y1][z0];
-                    const v011 = data.label[x0][y1][z1];
-                    const v100 = data.label[x1][y0][z0];
-                    const v101 = data.label[x1][y0][z1];
-                    const v110 = data.label[x1][y1][z0];
-                    const v111 = data.label[x1][y1][z1];
-                    
-                    const value = (1 - fx) * (1 - fy) * (1 - fz) * v000 +
-                                 fx * (1 - fy) * (1 - fz) * v100 +
-                                 (1 - fx) * fy * (1 - fz) * v010 +
-                                 fx * fy * (1 - fz) * v110 +
-                                 (1 - fx) * (1 - fy) * fz * v001 +
-                                 fx * (1 - fy) * fz * v101 +
-                                 (1 - fx) * fy * fz * v011 +
-                                 fx * fy * fz * v111;
-                    
-                    if (value > 0.5) {  // Threshold for interpolated labels
+                    if (value > 0.5) {  // Show points where the value is significant
                         const nx = (x / width) * 2 - 1;
                         const ny = (y / height) * 2 - 1;
                         const nz = (z / depth) * 2 - 1;
@@ -242,13 +214,13 @@ async function init3DViewer() {
             throw new Error('Required UI controls not found');
         }
 
-        // Initially show both
+        // Initially show volume only
         volumePoints.visible = true;
-        labelPoints.visible = true;
+        labelPoints.visible = false;
         
-        // Set both buttons as active initially
+        // Set volume button as active initially
         volumeBtn.classList.add('active');
-        maskBtn.classList.add('active');
+        maskBtn.classList.remove('active');
 
         // Volume button click handler
         volumeBtn.addEventListener('click', () => {
