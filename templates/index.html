@@ -133,9 +133,9 @@
 
         <div class="row mb-5">
             <div class="col-12">
+                <h2 class="text-center mb-4" style="color: #17a2b8; font-size: 2rem; font-weight: 500;">RCMed Helps 3D Medical Image Analysis</h2>
                 <div class="card bg-dark text-light">
                     <div class="card-body">
-                        <h2 class="text-center mb-4 tech-title">3D Medical Visualization</h2>
                         <div class="text-center mb-4" id="load-container">
                             <button class="btn btn-outline-info btn-lg" id="loadBtn">
                                 <i class="fas fa-cube me-2"></i>Load 3D Visualization
@@ -168,9 +168,7 @@
 
         <div class="row mb-4">
             <div class="col-12">
-                <p class="text-center lead mb-4" style="color: #17a2b8; font-size: 1.4rem; font-weight: 500; text-shadow: 0 0 10px rgba(23, 162, 184, 0.2); background: linear-gradient(to right, #17a2b8, #20c997); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
-                    RCMed can do fine-grained analysis across 9 modalities
-                </p>
+                <h2 class="text-center mb-4" style="color: #17a2b8; font-size: 2rem; font-weight: 500;">RCMed Can Do Fine-grained Analysis across 9 Modalities</h2>
                 <div class="d-flex justify-content-center gap-2 flex-wrap">
                     {% set modalities = cases|map(attribute='modality')|unique|list %}
                     {% for modality in modalities|sort %}
