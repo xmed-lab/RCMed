@@ -119,7 +119,7 @@ async function init3DViewer() {
         console.log(`Processing data of size ${width}x${height}x${depth}`);
         
         console.log('Creating point clouds...');
-        console.log('Data dimensions:', dimensions);
+        console.log('Data dimensions:', data.dimensions);
         
         const volumeGeometry = new THREE.BufferGeometry();
         const volumePositions = [];
