@@ -22,13 +22,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install Frozen-Flask nibabel
+          pip install Frozen-Flask nibabel pillow
           
       - name: Build static site
         run: |
-          mkdir -p build
           python build_static.py
-          cp -r static build/
+          touch build/.nojekyll
           
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -36,3 +35,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
           force_orphan: true
+          enable_jekyll: false

@@ -4,11 +4,11 @@ import numpy as np
 import os
 from PIL import Image
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/RCMed/static')
 
-# Configure static folder
-app.config['STATIC_FOLDER'] = 'static'
-app.config['STATIC_URL_PATH'] = '/RCMed/static'
+# Configure for GitHub Pages
+app.config['FREEZER_DESTINATION'] = 'build'
+app.config['FREEZER_RELATIVE_URLS'] = True
 
 def resize_image(image_path, target_size=1024):
     with Image.open(image_path) as img:
