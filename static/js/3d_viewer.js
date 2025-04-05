@@ -152,10 +152,15 @@ async function init3DViewer() {
             'max': Math.max(...data.image.slice(0, 1000))
         });
         
+        let pointCount = 0;
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 for (let z = 0; z < depth; z++) {
                     const idx = x + y * width + z * (width * height);
+                    if (idx >= data.image.length) {
+                        console.error('Index out of bounds:', {x, y, z, idx, length: data.image.length});
+                        continue;
+                    }
                     const value = data.image[idx];
                     
                     if (value > 0.1) {  // Lower threshold to show more points
@@ -166,10 +171,12 @@ async function init3DViewer() {
                         
                         volumePositions.push(nx, ny, nz);
                         volumeColors.push(1, 1, 1);  // White points
+                        pointCount++;
                     }
                 }
             }
         }
+        console.log('Generated points:', pointCount);
         
         volumeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(volumePositions, 3));
         volumeGeometry.setAttribute('color', new THREE.Float32BufferAttribute(volumeColors, 3));

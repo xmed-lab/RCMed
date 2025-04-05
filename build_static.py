@@ -120,6 +120,14 @@ def build_static_site():
     data_dir = os.path.join('build/static/data')
     os.makedirs(data_dir, exist_ok=True)
     
+    # Validate data before saving
+    print(f'Data validation:')
+    print(f'- Image array length: {len(data["image"])}')
+    print(f'- Label array length: {len(data["label"])}')
+    print(f'- Expected length: {data["dimensions"]["width"] * data["dimensions"]["height"] * data["dimensions"]["depth"]}')
+    print(f'- First few image values: {data["image"][:5]}')
+    print(f'- Image value range: [{min(data["image"])}, {max(data["image"])}]')
+    
     # Save data to JSON file
     data_file = os.path.join(data_dir, '3d_data.json')
     print(f'Saving 3D data to {data_file}')
