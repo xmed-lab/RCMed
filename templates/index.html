@@ -185,7 +185,12 @@
                                     {% elif modality == 'endoscopy' %}fa-eye
                                     {% elif modality == 'fundus' %}fa-eye
                                     {% else %}fa-image{% endif %} me-1"></i>
-                        {{ modality|replace('_', ' ')|title }}
+                        {% if modality == 'ct' %}CT
+                        {% elif modality == 'mr' %}MR
+                        {% elif modality == 'pet' %}PET
+                        {% elif modality == 'x_ray' %}X-ray
+                        {% else %}{{ modality|replace('_', ' ')|title }}
+                        {% endif %}
                     </button>
                     {% endfor %}
                 </div>
