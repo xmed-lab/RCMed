@@ -157,8 +157,14 @@ def build_static_site():
         json.dump(data, f, indent=2)
     
     print("Generated test 3D data with dimensions:", data['dimensions'])
-    print("Data ranges - Image:", 
-          f"min={min(data['image'])}, max={max(data['image'])}")
+    print("Number of points:", len(data['image']))
+    print("Number of labels:", len(data['label']))
+    
+    # Calculate value range from points
+    if data['image']:
+        values = [p['v'] for p in data['image']]
+        print("Data ranges - Image:", 
+              f"min={min(values)}, max={max(values)}")
     
     # Create 404 page
     with open('build/404.html', 'w', encoding='utf-8') as f:
