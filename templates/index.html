@@ -13,6 +13,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 0 0 15px rgba(23, 162, 184, 0.4);
+                background-position: 0% 50%;
+            }
+            50% {
+                text-shadow: 0 0 25px rgba(32, 201, 151, 0.6);
+            }
+            100% {
+                text-shadow: 0 0 15px rgba(23, 162, 184, 0.4);
+                background-position: 100% 50%;
+            }
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            text-shadow: 0 0 15px rgba(23, 162, 184, 0.4);
+            background: linear-gradient(45deg, #17a2b8, #20c997, #17a2b8);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 4s ease-in-out infinite;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #17a2b8, transparent);
+            border-radius: 2px;
+        }
+
         #viewer-container {
             width: 100%;
             height: 600px;
@@ -133,7 +174,7 @@
 
         <div class="row mb-5">
             <div class="col-12">
-                <h2 class="text-center mb-4" style="color: #17a2b8; font-size: 2rem; font-weight: 500;">RCMed Helps 3D Medical Image Analysis</h2>
+                <h2 class="text-center section-title">RCMed Helps 3D Medical Image Analysis</h2>
                 <div class="card bg-dark text-light">
                     <div class="card-body">
                         <div class="text-center mb-4" id="load-container">
@@ -168,7 +209,7 @@
 
         <div class="row mb-4">
             <div class="col-12">
-                <h2 class="text-center mb-4" style="color: #17a2b8; font-size: 2rem; font-weight: 500;">RCMed Can Do Fine-grained Analysis across 9 Modalities</h2>
+                <h2 class="text-center section-title">RCMed Can Do Fine-grained Analysis across 9 Modalities</h2>
                 <div class="d-flex justify-content-center gap-2 flex-wrap">
                     {% set modalities = cases|map(attribute='modality')|unique|list %}
                     {% for modality in modalities|sort %}
