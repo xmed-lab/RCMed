@@ -119,7 +119,7 @@ def build_static_site():
     if os.path.exists('build'):
         shutil.rmtree('build')
     os.makedirs('build')
-    os.makedirs('build/api')
+    os.makedirs(os.path.join('build', 'api'))
     
     # Copy static files
     shutil.copytree('static', 'build/static')
@@ -151,10 +151,20 @@ def build_static_site():
     data = create_3d_data()
     
     # Save data with pretty printing for debugging
-    with open('build/api/get_3d_data', 'w') as f:
-        json.dump(data, f, indent=2)
-    with open('build/get_3d_data', 'w') as f:
-        json.dump(data, f, indent=2)
+    api_paths = [
+        os.path.join('build', 'api', 'get_3d_data'),
+        os.path.join('build', 'get_3d_data'),
+        os.path.join('build', 'RCMed', 'api', 'get_3d_data')
+    ]
+    
+    # Create RCMed/api directory
+    os.makedirs(os.path.join('build', 'RCMed', 'api'), exist_ok=True)
+    
+    # Write data to all paths
+    for path in api_paths:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=2)
     
     print("Generated test 3D data with dimensions:", data['dimensions'])
     print("Number of points:", len(data['image']))

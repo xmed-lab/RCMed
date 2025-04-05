@@ -66,10 +66,16 @@ async function init3DViewer() {
         // Fetch the 3D data
         let response;
         try {
-            response = await fetch('/api/get_3d_data');
+            // Try GitHub Pages path first
+            response = await fetch('/RCMed/api/get_3d_data');
         } catch (error) {
-            console.log('Trying alternate path...');
-            response = await fetch('/get_3d_data');
+            console.log('Trying alternate paths...');
+            try {
+                response = await fetch('/api/get_3d_data');
+            } catch (error) {
+                console.log('Trying local path...');
+                response = await fetch('/get_3d_data');
+            }
         }
         
         if (!response.ok) {
