@@ -29,6 +29,7 @@ def build_static_site():
     if os.path.exists('build'):
         shutil.rmtree('build')
     os.makedirs('build')
+    os.makedirs('build/api')  # Create api directory
     
     # Copy static files
     shutil.copytree('static', 'build/static')
@@ -36,7 +37,6 @@ def build_static_site():
     # Setup Jinja2 environment
     env = Environment(loader=FileSystemLoader('templates'))
     template = env.get_template('index.html')
-    viewer_template = env.get_template('3d_viewer.html')
     
     # Get cases data
     cases = get_cases_from_files()
@@ -57,20 +57,22 @@ def build_static_site():
     with open('build/index.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
     
-    # Render 3D viewer template
-    viewer_content = viewer_template.render(
-        url_for=url_for
-    )
-    
-    # Create 3d_viewer directory and write template
-    os.makedirs('build/3d_viewer')
-    with open('build/3d_viewer/index.html', 'w', encoding='utf-8') as f:
-        f.write(viewer_content)
-    
     # Generate and write 3D data
-    data = get_3d_data()
-    with open('build/get_3d_data', 'w') as f:
-        json.dump(data, f)
+    try:
+        data = get_3d_data()
+        # Save to both locations to ensure it's found
+        with open('build/api/get_3d_data', 'w') as f:
+            json.dump(data, f)
+        with open('build/get_3d_data', 'w') as f:
+            json.dump(data, f)
+    except Exception as e:
+        print(f"Error generating 3D data: {e}")
+        # Create empty data as fallback
+        empty_data = {'image': [], 'label': []}
+        with open('build/api/get_3d_data', 'w') as f:
+            json.dump(empty_data, f)
+        with open('build/get_3d_data', 'w') as f:
+            json.dump(empty_data, f)
     
     # Create 404 page
     with open('build/404.html', 'w', encoding='utf-8') as f:
