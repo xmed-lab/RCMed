@@ -88,12 +88,14 @@ async function init3DViewer() {
 
     try {
         // Fetch the 3D data
+        console.log('Fetching 3D data...');
         let response;
         try {
-            response = await fetch('/RCMed/api/get_3d_data');
+            response = await fetch('/static/data/3d_data.json');
+            console.log('Fetch response:', response.status);
         } catch (error) {
-            console.log('Trying alternate path...');
-            response = await fetch('/RCMed/get_3d_data');
+            console.error('Fetch error:', error);
+            throw error;
         }
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -101,6 +103,11 @@ async function init3DViewer() {
         const data = await response.json();
         
         if (!data.image || !data.label || !data.dimensions) {
+            console.error('Missing required data fields:', {
+                hasImage: !!data.image,
+                hasLabel: !!data.label,
+                hasDimensions: !!data.dimensions
+            });
             throw new Error('Invalid data format received from server');
         }
         
@@ -111,6 +118,12 @@ async function init3DViewer() {
         }
         
         if (!Array.isArray(data.image) || !Array.isArray(data.label)) {
+            console.error('Data type check failed:', {
+                imageType: typeof data.image,
+                labelType: typeof data.label,
+                imageIsArray: Array.isArray(data.image),
+                labelIsArray: Array.isArray(data.label)
+            });
             throw new Error('Image or label data is not an array');
         }
         
@@ -130,13 +143,22 @@ async function init3DViewer() {
         console.log('Total data points:', data.image.length);
         console.log('Expected points:', width * height * depth);
         
+        // Log some sample values
+        console.log('Sample values:', {
+            'data[0]': data.image[0],
+            'data[100]': data.image[100],
+            'data[1000]': data.image[1000],
+            'min': Math.min(...data.image.slice(0, 1000)),
+            'max': Math.max(...data.image.slice(0, 1000))
+        });
+        
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 for (let z = 0; z < depth; z++) {
                     const idx = x + y * width + z * (width * height);
                     const value = data.image[idx];
                     
-                    if (value > 0.5) {  // Only show points where the value is significant
+                    if (value > 0.1) {  // Lower threshold to show more points
                         // Normalize coordinates to [-1, 1]
                         const nx = (x / width) * 2 - 1;
                         const ny = (y / height) * 2 - 1;

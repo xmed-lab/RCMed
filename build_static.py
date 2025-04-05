@@ -104,13 +104,19 @@ def build_static_site():
         f.write(html_content)
     
     # Generate and write 3D data
+    print('Generating 3D data...')
     data = create_3d_data()
     
-    # Save data with pretty printing for debugging
-    with open('build/api/get_3d_data', 'w') as f:
+    # Create data directory
+    data_dir = os.path.join('build/static/data')
+    os.makedirs(data_dir, exist_ok=True)
+    
+    # Save data to JSON file
+    data_file = os.path.join(data_dir, '3d_data.json')
+    print(f'Saving 3D data to {data_file}')
+    with open(data_file, 'w') as f:
         json.dump(data, f, indent=2)
-    with open('build/get_3d_data', 'w') as f:
-        json.dump(data, f, indent=2)
+    print('3D data saved successfully')
     
     print("Generated test 3D data with dimensions:", data['dimensions'])
     print("Data ranges - Image:", 
