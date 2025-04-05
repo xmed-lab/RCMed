@@ -100,11 +100,11 @@ async function init3DViewer() {
         }
         const data = await response.json();
         
-        if (data.error) {
-            throw new Error(data.error);
+        if (!data.image || !data.label || !data.dimensions) {
+            throw new Error('Invalid data format received from server');
         }
         
-        console.log('Received data:', data);
+        console.log('Received data dimensions:', data.dimensions);
         
         if (!data.dimensions || !data.image || !data.label) {
             throw new Error('Invalid data format received from server');
@@ -115,8 +115,8 @@ async function init3DViewer() {
         }
         
         // Create points for volume visualization
-        const { dimensions } = data;
-        const [width, height, depth] = dimensions;
+        const { width, height, depth } = data.dimensions;
+        console.log(`Processing data of size ${width}x${height}x${depth}`);
         
         console.log('Creating point clouds...');
         console.log('Data dimensions:', dimensions);
@@ -143,15 +143,25 @@ async function init3DViewer() {
                     const fy = y - y0;
                     const fz = z - z0;
                     
+                    // Get indices for the current position
+                    const idx000 = (x0 * height * depth) + (y0 * depth) + z0;
+                    const idx001 = (x0 * height * depth) + (y0 * depth) + z1;
+                    const idx010 = (x0 * height * depth) + (y1 * depth) + z0;
+                    const idx011 = (x0 * height * depth) + (y1 * depth) + z1;
+                    const idx100 = (x1 * height * depth) + (y0 * depth) + z0;
+                    const idx101 = (x1 * height * depth) + (y0 * depth) + z1;
+                    const idx110 = (x1 * height * depth) + (y1 * depth) + z0;
+                    const idx111 = (x1 * height * depth) + (y1 * depth) + z1;
+                    
                     // Trilinear interpolation
-                    const v000 = data.image[x0][y0][z0];
-                    const v001 = data.image[x0][y0][z1];
-                    const v010 = data.image[x0][y1][z0];
-                    const v011 = data.image[x0][y1][z1];
-                    const v100 = data.image[x1][y0][z0];
-                    const v101 = data.image[x1][y0][z1];
-                    const v110 = data.image[x1][y1][z0];
-                    const v111 = data.image[x1][y1][z1];
+                    const v000 = data.image[idx000] || 0;
+                    const v001 = data.image[idx001] || 0;
+                    const v010 = data.image[idx010] || 0;
+                    const v011 = data.image[idx011] || 0;
+                    const v100 = data.image[idx100] || 0;
+                    const v101 = data.image[idx101] || 0;
+                    const v110 = data.image[idx110] || 0;
+                    const v111 = data.image[idx111] || 0;
                     
                     const value = (1 - fx) * (1 - fy) * (1 - fz) * v000 +
                                  fx * (1 - fy) * (1 - fz) * v100 +
