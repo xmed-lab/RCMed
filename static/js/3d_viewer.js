@@ -127,10 +127,13 @@ async function init3DViewer() {
         
         // Process volume data
         console.log('Processing volume data...');
+        console.log('Total data points:', data.image.length);
+        console.log('Expected points:', width * height * depth);
+        
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 for (let z = 0; z < depth; z++) {
-                    const idx = x * (height * depth) + y * depth + z;
+                    const idx = x + y * width + z * (width * height);
                     const value = data.image[idx];
                     
                     if (value > 0.5) {  // Only show points where the value is significant

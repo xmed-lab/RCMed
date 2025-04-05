@@ -43,8 +43,8 @@ def create_3d_data():
                 'height': int(height),
                 'depth': int(depth)
             },
-            'image': np.ascontiguousarray(image_data.transpose(2, 1, 0)).ravel().tolist(),
-            'label': np.ascontiguousarray(label_data.transpose(2, 1, 0)).ravel().tolist()
+            'image': image_data.ravel().tolist(),
+            'label': label_data.ravel().tolist()
         }
         
         print(f'Successfully loaded 3D data with shape: {image_data.shape}')
@@ -66,8 +66,8 @@ def create_3d_data():
                 'height': size,
                 'depth': size
             },
-            'image': np.ascontiguousarray(image_data.transpose(2, 1, 0)).ravel().tolist(),
-            'label': np.ascontiguousarray(label_data.transpose(2, 1, 0)).ravel().tolist()
+            'image': image_data.ravel().tolist(),
+            'label': label_data.ravel().tolist()
         }
 
 def build_static_site():
