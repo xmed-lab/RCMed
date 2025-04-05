@@ -6,6 +6,10 @@ from PIL import Image
 
 app = Flask(__name__)
 
+# Configure static folder
+app.config['STATIC_FOLDER'] = 'static'
+app.config['STATIC_URL_PATH'] = '/RCMed/static'
+
 def resize_image(image_path, target_size=1024):
     with Image.open(image_path) as img:
         # Get original dimensions
