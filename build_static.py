@@ -5,34 +5,70 @@ import numpy as np
 from jinja2 import Environment, FileSystemLoader
 from app import get_cases_from_files
 
-def create_test_data():
-    # Create a simple 3D shape (a sphere)
-    size = 32
-    center = size // 2
-    radius = size // 4
-    
-    # Create coordinate grids
-    x, y, z = np.ogrid[:size, :size, :size]
-    
-    # Create a sphere
-    sphere = (x - center)**2 + (y - center)**2 + (z - center)**2 <= radius**2
-    
-    # Convert to float32
-    image_data = sphere.astype(np.float32)
-    label_data = sphere.astype(np.float32)
-    
-    # Create the data structure
-    data = {
-        'dimensions': {
-            'width': size,
-            'height': size,
-            'depth': size
-        },
-        'image': image_data.ravel().tolist(),
-        'label': label_data.ravel().tolist()
-    }
-    
-    return data
+def create_3d_data():
+    try:
+        # Load NIfTI files
+        image_path = os.path.join('static', 'images', 'image.nii.gz')
+        label_path = os.path.join('static', 'images', 'label.nii.gz')
+        
+        if not os.path.exists(image_path) or not os.path.exists(label_path):
+            raise FileNotFoundError('NIfTI files not found')
+        
+        import nibabel as nib
+        
+        # Load image and label data
+        image_nii = nib.load(image_path)
+        label_nii = nib.load(label_path)
+        
+        # Get the data arrays
+        image_data = image_nii.get_fdata()
+        label_data = label_nii.get_fdata()
+        
+        # Normalize image data to [0, 1]
+        image_min = np.min(image_data)
+        image_max = np.max(image_data)
+        image_data = (image_data - image_min) / (image_max - image_min)
+        
+        # Convert to float32
+        image_data = image_data.astype(np.float32)
+        label_data = label_data.astype(np.float32)
+        
+        # Get dimensions
+        width, height, depth = image_data.shape
+        
+        # Create the data structure
+        data = {
+            'dimensions': {
+                'width': int(width),
+                'height': int(height),
+                'depth': int(depth)
+            },
+            'image': image_data.ravel().tolist(),
+            'label': label_data.ravel().tolist()
+        }
+        
+        print(f'Successfully loaded 3D data with shape: {image_data.shape}')
+        print(f'Image range: [{np.min(image_data)}, {np.max(image_data)}]')
+        
+        return data
+        
+    except Exception as e:
+        print(f'Error loading 3D data: {str(e)}')
+        # Return a small test cube as fallback
+        size = 16
+        image_data = np.zeros((size, size, size), dtype=np.float32)
+        image_data[4:12, 4:12, 4:12] = 1.0
+        label_data = image_data.copy()
+        
+        return {
+            'dimensions': {
+                'width': size,
+                'height': size,
+                'depth': size
+            },
+            'image': image_data.ravel().tolist(),
+            'label': label_data.ravel().tolist()
+        }
 
 def build_static_site():
     # Create build directory
@@ -68,7 +104,7 @@ def build_static_site():
         f.write(html_content)
     
     # Generate and write 3D data
-    data = create_test_data()
+    data = create_3d_data()
     
     # Save data with pretty printing for debugging
     with open('build/api/get_3d_data', 'w') as f:
