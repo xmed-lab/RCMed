@@ -1,25 +1,33 @@
 import os
 import shutil
-from flask_frozen import Freezer
-from app import app, get_cases_from_files
+from jinja2 import Environment, FileSystemLoader
+from app import get_cases_from_files
 
-# Configure app for GitHub Pages
-app.config['FREEZER_BASE_URL'] = 'https://xmed-lab.github.io/RCMed/'
-
-# Create the freezer
-freezer = Freezer(app)
-
-@freezer.register_generator
-def default_url_generator():
-    yield {'path': '/'}
-
-if __name__ == '__main__':
-    # Clean build directory
+def build_static_site():
+    # Create build directory
     if os.path.exists('build'):
         shutil.rmtree('build')
-    
-    # Generate static files
-    freezer.freeze()
+    os.makedirs('build')
     
     # Copy static files
-    shutil.copytree('static', 'build/static', dirs_exist_ok=True)
+    shutil.copytree('static', 'build/static')
+    
+    # Setup Jinja2 environment
+    env = Environment(loader=FileSystemLoader('templates'))
+    template = env.get_template('index.html')
+    
+    # Get cases data
+    cases = get_cases_from_files()
+    
+    # Render template
+    html_content = template.render(
+        cases=cases,
+        url_for=lambda endpoint, filename: f'/RCMed/static/{filename}'
+    )
+    
+    # Write index.html
+    with open('build/index.html', 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+if __name__ == '__main__':
+    build_static_site()
