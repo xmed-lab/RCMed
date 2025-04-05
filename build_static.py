@@ -33,8 +33,37 @@ def create_3d_data():
         image_data = image_data.astype(np.float32)
         label_data = label_data.astype(np.float32)
         
-        # Get dimensions
+        # Sample the data to reduce size (take every 2nd point)
+        stride = 2
+        image_data = image_data[::stride, ::stride, ::stride]
+        label_data = label_data[::stride, ::stride, ::stride]
+        
+        # Get dimensions after sampling
         width, height, depth = image_data.shape
+        
+        # Convert to points format
+        threshold = 0.1
+        points = []
+        labels = []
+        
+        for x in range(width):
+            for y in range(height):
+                for z in range(depth):
+                    val = float(image_data[x,y,z])
+                    if val > threshold:
+                        points.append({
+                            'x': int(x),
+                            'y': int(y),
+                            'z': int(z),
+                            'v': val
+                        })
+                    
+                    if label_data[x,y,z] > 0:
+                        labels.append({
+                            'x': int(x),
+                            'y': int(y),
+                            'z': int(z)
+                        })
         
         # Create the data structure
         data = {
@@ -43,8 +72,8 @@ def create_3d_data():
                 'height': int(height),
                 'depth': int(depth)
             },
-            'image': np.ascontiguousarray(image_data.transpose(2, 1, 0)).ravel().tolist(),
-            'label': np.ascontiguousarray(label_data.transpose(2, 1, 0)).ravel().tolist()
+            'image': points,
+            'label': labels
         }
         
         print(f'Successfully loaded 3D data with shape: {image_data.shape}')
@@ -56,9 +85,24 @@ def create_3d_data():
         print(f'Error loading 3D data: {str(e)}')
         # Return a small test cube as fallback
         size = 16
-        image_data = np.zeros((size, size, size), dtype=np.float32)
-        image_data[4:12, 4:12, 4:12] = 1.0
-        label_data = image_data.copy()
+        points = []
+        labels = []
+        
+        # Create a simple cube
+        for x in range(4, 12):
+            for y in range(4, 12):
+                for z in range(4, 12):
+                    points.append({
+                        'x': x,
+                        'y': y,
+                        'z': z,
+                        'v': 1.0
+                    })
+                    labels.append({
+                        'x': x,
+                        'y': y,
+                        'z': z
+                    })
         
         return {
             'dimensions': {
@@ -66,8 +110,8 @@ def create_3d_data():
                 'height': size,
                 'depth': size
             },
-            'image': np.ascontiguousarray(image_data.transpose(2, 1, 0)).ravel().tolist(),
-            'label': np.ascontiguousarray(label_data.transpose(2, 1, 0)).ravel().tolist()
+            'image': points,
+            'label': labels
         }
 
 def build_static_site():
