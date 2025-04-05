@@ -1,7 +1,28 @@
 import os
 import shutil
+import json
+import nibabel as nib
+import numpy as np
 from jinja2 import Environment, FileSystemLoader
 from app import get_cases_from_files
+
+def get_3d_data():
+    image_path = os.path.join('static', 'images', 'image.nii.gz')
+    label_path = os.path.join('static', 'images', 'label.nii.gz')
+    
+    # Load image and label
+    image = nib.load(image_path)
+    label = nib.load(label_path)
+    
+    # Get data
+    image_data = image.get_fdata()
+    label_data = label.get_fdata()
+    
+    # Convert to list for JSON serialization
+    return {
+        'image': image_data.tolist(),
+        'label': label_data.tolist()
+    }
 
 def build_static_site():
     # Create build directory
@@ -15,6 +36,7 @@ def build_static_site():
     # Setup Jinja2 environment
     env = Environment(loader=FileSystemLoader('templates'))
     template = env.get_template('index.html')
+    viewer_template = env.get_template('3d_viewer.html')
     
     # Get cases data
     cases = get_cases_from_files()
@@ -25,7 +47,7 @@ def build_static_site():
             return f'static/{filename}'
         return ''
     
-    # Render template
+    # Render main template
     html_content = template.render(
         cases=cases,
         url_for=url_for
@@ -35,7 +57,22 @@ def build_static_site():
     with open('build/index.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
     
-    # Create a simple index.html in the root that redirects to build/index.html
+    # Render 3D viewer template
+    viewer_content = viewer_template.render(
+        url_for=url_for
+    )
+    
+    # Create 3d_viewer directory and write template
+    os.makedirs('build/3d_viewer')
+    with open('build/3d_viewer/index.html', 'w', encoding='utf-8') as f:
+        f.write(viewer_content)
+    
+    # Generate and write 3D data
+    data = get_3d_data()
+    with open('build/get_3d_data', 'w') as f:
+        json.dump(data, f)
+    
+    # Create 404 page
     with open('build/404.html', 'w', encoding='utf-8') as f:
         f.write('''
 <!DOCTYPE html>

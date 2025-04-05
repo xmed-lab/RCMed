@@ -88,7 +88,7 @@ async function init3DViewer() {
 
     try {
         // Fetch the 3D data
-        const response = await fetch('/api/get_3d_data');
+        const response = await fetch('/RCMed/get_3d_data');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
