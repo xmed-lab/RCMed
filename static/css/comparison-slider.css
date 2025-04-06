@@ -1,0 +1,118 @@
+.image-compare {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+.image-compare img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.image-compare .original-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.image-compare .segmented-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: inset(0 0 0 50%);
+}
+
+.slider-handle {
+    position: absolute;
+    width: 24px;
+    height: 48px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    background: #2a2a2a;
+    border: 2px solid #00b4d8;
+    border-radius: 4px;
+    cursor: grab;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+    background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        #00b4d8 2px,
+        #00b4d8 3px
+    );
+    background-size: 6px 100%;
+    background-repeat: repeat-x;
+    background-position: center;
+}
+
+.slider-handle::before,
+.slider-handle::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    background: #2a2a2a;
+    border: 2px solid #00b4d8;
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+}
+
+.slider-handle::before {
+    top: 0;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.slider-handle::after {
+    bottom: 0;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
+
+.slider-line {
+    position: absolute;
+    width: 4px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    background: #00b4d8;
+    transform: translateX(-50%);
+    z-index: 9;
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+    opacity: 0.5;
+}
+
+.image-label {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00b4d8;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border: 1px solid #00b4d8;
+    z-index: 8;
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.3);
+}
+
+.original-label {
+    top: 10px;
+    left: 10px;
+}
+
+.segmented-label {
+    top: 10px;
+    right: 10px;
+}

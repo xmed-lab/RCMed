@@ -1,0 +1,64 @@
+/* 科技感渐变动画 */
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* 主标题特效 */
+.tech-title {
+    background: linear-gradient(45deg, #00b4d8, #00f2ff, #48cae4, #00b4d8);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    animation: gradientFlow 8s ease infinite;
+    text-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+    letter-spacing: 2px;
+}
+
+/* 品牌名称特效 */
+.tech-brand {
+    position: relative;
+    color: #00b4d8 !important;
+    text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+    transition: all 0.3s ease;
+}
+
+.tech-brand::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00b4d8, transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+}
+
+.tech-brand:hover {
+    color: #48cae4 !important;
+    text-shadow: 0 0 15px rgba(0, 180, 216, 0.8);
+}
+
+.tech-brand:hover::before {
+    transform: scaleX(1);
+}
+
+/* 图标特效 */
+.tech-brand i {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.tech-brand:hover i {
+    transform: rotate(180deg);
+}
