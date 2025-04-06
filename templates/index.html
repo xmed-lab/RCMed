@@ -156,10 +156,26 @@
         }
     </style>
 <body>
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg sticky-top" style="background: rgba(0,0,0,0.95); backdrop-filter: blur(10px);">
         <div class="container">
             <a class="navbar-brand tech-brand" href="#"><i class="fas fa-microscope me-2"></i>RCMed</a>
-            <div class="d-flex">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-info" href="#recognize"><i class="fas fa-search me-1"></i>Recognize & Localize</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-info" href="#analysis"><i class="fas fa-chart-bar me-1"></i>Fine-grained Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-info" href="#3d"><i class="fas fa-cube me-1"></i>3D Analysis</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="d-flex ms-3">
                 <span class="text-muted small">XMed-LAB</span>
             </div>
         </div>
@@ -182,32 +198,88 @@
             </div>
         </div>
 
-        <div class="row mb-5">
+        <div class="row mb-4 mt-5">
             <div class="col-12">
-                <h2 class="text-center section-title">RCMed Helps 3D Medical Image Analysis</h2>
-                <div class="card bg-dark text-light">
-                    <div class="card-body">
-                        <div class="text-center mb-4" id="load-container">
-                            <button class="btn btn-outline-info btn-lg" id="loadBtn">
-                                <i class="fas fa-cube me-2"></i>Load 3D Visualization
-                            </button>
+                <h2 class="text-center section-title" id="recognize">RCMed Can Recognize and Localize Targets</h2>
+                <div class="row">
+                    <!-- Capillaries Example -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <p class="mb-0"><strong class="text-info"><i class="fas fa-search me-2"></i>Recognition results:</strong> Capillaries</p>
+                            </div>
                         </div>
-                        <div id="viewer-container" style="display: none;">
-                            <div class="controls">
-                                <div class="control-group">
-                                    <div class="control-column">
-                                        <button class="control-btn active" id="volumeBtn">
-                                            <i class="fas fa-cube me-1"></i>Volume
-                                        </button>
-                                        <input type="range" class="form-range" id="volumeOpacitySlider" min="0" max="100" value="100">
-                                        <label class="text-light small">Opacity</label>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="mb-2"><strong class="text-info"><i class="fas fa-crosshairs me-2"></i>Localization results</strong></p>
+                                <div class="image-container">
+                                    <div class="image-compare">
+                                        <img src="{{ url_for('static', filename='images/localize/pathology--capillaries--image.png') }}" 
+                                             alt="Original Capillaries" class="original-image">
+                                        <div class="segmented-image">
+                                            <img src="{{ url_for('static', filename='images/localize/pathology--capillaries--box.png') }}" 
+                                                 alt="Localized Capillaries">
+                                        </div>
+                                        <div class="slider-handle"></div>
+                                        <div class="slider-line"></div>
+                                        <div class="image-label original-label"><i class="fas fa-image me-1"></i>Original</div>
+                                        <div class="image-label segmented-label"><i class="fas fa-box me-1"></i>Localized</div>
                                     </div>
-                                    <div class="control-column">
-                                        <button class="control-btn active" id="maskBtn">
-                                            <i class="fas fa-layer-group me-1"></i>Mask
-                                        </button>
-                                        <input type="range" class="form-range" id="maskOpacitySlider" min="0" max="100" value="100">
-                                        <label class="text-light small">Opacity</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nuclei Example -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <p class="mb-0"><strong class="text-info"><i class="fas fa-search me-2"></i>Recognition results:</strong> Nuclei</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="mb-2"><strong class="text-info"><i class="fas fa-crosshairs me-2"></i>Localization results</strong></p>
+                                <div class="image-container">
+                                    <div class="image-compare">
+                                        <img src="{{ url_for('static', filename='images/localize/pathology--nuclei--image.png') }}" 
+                                             alt="Original Nuclei" class="original-image">
+                                        <div class="segmented-image">
+                                            <img src="{{ url_for('static', filename='images/localize/pathology--nuclei--box.png') }}" 
+                                                 alt="Localized Nuclei">
+                                        </div>
+                                        <div class="slider-handle"></div>
+                                        <div class="slider-line"></div>
+                                        <div class="image-label original-label"><i class="fas fa-image me-1"></i>Original</div>
+                                        <div class="image-label segmented-label"><i class="fas fa-box me-1"></i>Localized</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gland Example -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <p class="mb-0"><strong class="text-info"><i class="fas fa-search me-2"></i>Recognition results:</strong> Gland</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="mb-2"><strong class="text-info"><i class="fas fa-crosshairs me-2"></i>Localization results</strong></p>
+                                <div class="image-container">
+                                    <div class="image-compare">
+                                        <img src="{{ url_for('static', filename='images/localize/pathology--gland--image.png') }}" 
+                                             alt="Original Gland" class="original-image">
+                                        <div class="segmented-image">
+                                            <img src="{{ url_for('static', filename='images/localize/pathology--gland--box.png') }}" 
+                                                 alt="Localized Gland">
+                                        </div>
+                                        <div class="slider-handle"></div>
+                                        <div class="slider-line"></div>
+                                        <div class="image-label original-label"><i class="fas fa-image me-1"></i>Original</div>
+                                        <div class="image-label segmented-label"><i class="fas fa-box me-1"></i>Localized</div>
                                     </div>
                                 </div>
                             </div>
@@ -219,7 +291,7 @@
 
         <div class="row mb-4">
             <div class="col-12">
-                <h2 class="text-center section-title">RCMed Can Do Fine-grained Analysis across 9 Modalities</h2>
+                <h2 class="text-center section-title" id="analysis">RCMed Can Do Fine-grained Analysis across 9 Modalities</h2>
                 <div class="d-flex justify-content-center gap-2 flex-wrap">
                     {% set modalities = cases|map(attribute='modality')|unique|list %}
                     {% for modality in modalities|sort %}
@@ -246,6 +318,7 @@
             </div>
         </div>
 
+        <!-- Segmentation Cases -->
         <div class="row row-cols-1 row-cols-md-2 g-4" id="cases-container">
             {% for case in cases %}
             <div class="col case-item" data-modality="{{ case.modality }}">
@@ -281,6 +354,42 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+
+        <!-- Localization Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="text-center section-title" id="3d">RCMed Helps 3D Medical Image Analysis</h2>
+                <div class="card bg-dark text-light">
+                    <div class="card-body">
+                        <div class="text-center mb-4" id="load-container">
+                            <button class="btn btn-outline-info btn-lg" id="loadBtn">
+                                <i class="fas fa-cube me-2"></i>Load 3D Visualization
+                            </button>
+                        </div>
+                        <div id="viewer-container" style="display: none;">
+                            <div class="controls">
+                                <div class="control-group">
+                                    <div class="control-column">
+                                        <button class="control-btn active" id="volumeBtn">
+                                            <i class="fas fa-cube me-1"></i>Volume
+                                        </button>
+                                        <input type="range" class="form-range" id="volumeOpacitySlider" min="0" max="100" value="100">
+                                        <label class="text-light small">Opacity</label>
+                                    </div>
+                                    <div class="control-column">
+                                        <button class="control-btn active" id="maskBtn">
+                                            <i class="fas fa-layer-group me-1"></i>Mask
+                                        </button>
+                                        <input type="range" class="form-range" id="maskOpacitySlider" min="0" max="100" value="100">
+                                        <label class="text-light small">Opacity</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
